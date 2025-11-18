@@ -1,73 +1,55 @@
-function App() {
+import { useMemo, useState } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
+import Navbar from './components/Navbar'
+import Footer from './components/Footer'
+import Home from './pages/Home'
+import Feed from './pages/Feed'
+import Businesses from './pages/Businesses'
+import BusinessProfile from './pages/BusinessProfile'
+import BusinessDashboard from './pages/BusinessDashboard'
+import Pricing from './pages/Pricing'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
+import Profile from './pages/Profile'
+import WriteReview from './pages/WriteReview'
+import StaticPage from './pages/StaticPage'
+
+function AppShell({ children, rtl }){
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.05),transparent_50%)]"></div>
-
-      <div className="relative min-h-screen flex items-center justify-center p-8">
-        <div className="max-w-2xl w-full">
-          {/* Header with Flames icon */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center mb-6">
-              <img
-                src="/flame-icon.svg"
-                alt="Flames"
-                className="w-24 h-24 drop-shadow-[0_0_25px_rgba(59,130,246,0.5)]"
-              />
-            </div>
-
-            <h1 className="text-5xl font-bold text-white mb-4 tracking-tight">
-              Flames Blue
-            </h1>
-
-            <p className="text-xl text-blue-200 mb-6">
-              Build applications through conversation
-            </p>
-          </div>
-
-          {/* Instructions */}
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 shadow-xl mb-6">
-            <div className="flex items-start gap-4 mb-6">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">
-                1
-              </div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Describe your idea</h3>
-                <p className="text-blue-200/80 text-sm">Use the chat panel on the left to tell the AI what you want to build</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 mb-6">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">
-                2
-              </div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Watch it build</h3>
-                <p className="text-blue-200/80 text-sm">Your app will appear in this preview as the AI generates the code</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">
-                3
-              </div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Refine and iterate</h3>
-                <p className="text-blue-200/80 text-sm">Continue the conversation to add features and make changes</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="text-center">
-            <p className="text-sm text-blue-300/60">
-              No coding required • Just describe what you want
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className={`${rtl ? 'direction-rtl' : ''}`}>
+      {children}
     </div>
   )
 }
 
-export default App
+export default function App(){
+  const [rtl, setRtl] = useState(false)
+  const [lang, setLang] = useState('EN')
+  const location = useLocation()
+  const showFooter = useMemo(()=> !['/login','/signup'].includes(location.pathname), [location.pathname])
+
+  return (
+    <div className={`${rtl ? 'rtl' : ''} min-h-screen bg-gray-50 text-gray-900`} dir={rtl? 'rtl' : 'ltr'}>
+      <Navbar rtl={rtl} setRtl={setRtl} lang={lang} setLang={setLang} />
+      <main className="min-h-[60vh]">
+        <Routes>
+          <Route path="/" element={<Home lang={lang} rtl={rtl} />} />
+          <Route path="/feed" element={<Feed />} />
+          <Route path="/businesses" element={<Businesses />} />
+          <Route path="/business/:id" element={<BusinessProfile />} />
+          <Route path="/business-dashboard" element={<BusinessDashboard />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/review/new" element={<WriteReview />} />
+          <Route path="/about" element={<StaticPage title="About" />} />
+          <Route path="/contact" element={<StaticPage title="Contact" />} />
+          <Route path="/terms" element={<StaticPage title="Terms" />} />
+          <Route path="/privacy" element={<StaticPage title="Privacy" />} />
+        </Routes>
+      </main>
+      {showFooter && <Footer/>}
+    </div>
+  )
+}
